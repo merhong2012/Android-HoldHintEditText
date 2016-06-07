@@ -13,7 +13,6 @@ public class MainActivity extends AppCompatActivity {
         HoldHintEditText editText = (HoldHintEditText) findViewById(R.id.editText);
         String hint = "想说点什么呢:";
         assert editText != null;
-        editText.setHoldHint(hint);
-        editText.setText(hint);
+        editText.setHoldHintText(hint);
     }
 }

@@ -14,14 +14,13 @@ import android.widget.EditText;
  * 后期计划 增加设置Hint color、size、image
  */
 public class HoldHintEditText extends EditText implements View.OnKeyListener {
-    private String hintStr;
+    private String hintStr = "";
     private boolean isSelecteAll = false; // 是否全选状态
 
     public HoldHintEditText(Context context) {
         super(context);
         init();
     }
-
 
     public HoldHintEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,15 +32,25 @@ public class HoldHintEditText extends EditText implements View.OnKeyListener {
         init();
     }
 
-    public void setHoldHint(String str) {
+    /**
+     * 先行调用此方法
+     *
+     * @param str
+     */
+    public void setHoldHintText(String str) {
         if (TextUtils.isEmpty(str)) {
             return;
         }
         this.hintStr = str;
+        if (TextUtils.isEmpty(getTextString())) {
+            setText(hintStr);
+        }
+
     }
 
+
     private void init() {
-        hintStr = getText().toString().trim();
+        hintStr = getTextString();
         setSelection(hintStr.length());
         setOnKeyListener(this);
     }
@@ -97,7 +106,14 @@ public class HoldHintEditText extends EditText implements View.OnKeyListener {
         return false;
     }
 
+
     private int getLength() {
         return getText().toString().trim().length();
     }
+
+    private String getTextString() {
+        return getText().toString().trim();
+    }
+
+
 }

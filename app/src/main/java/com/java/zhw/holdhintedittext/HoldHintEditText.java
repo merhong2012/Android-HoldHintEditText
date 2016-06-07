@@ -15,6 +15,7 @@ import android.widget.EditText;
  */
 public class HoldHintEditText extends EditText implements View.OnKeyListener {
     private String hintStr;
+    private boolean isSelecteAll = false; // 是否全选状态
 
     public HoldHintEditText(Context context) {
         super(context);
@@ -45,10 +46,16 @@ public class HoldHintEditText extends EditText implements View.OnKeyListener {
         setOnKeyListener(this);
     }
 
+    /**
+     * 禁止焦点处于HintStr中
+     *
+     * @param selStart
+     * @param selEnd
+     */
     @Override
     protected void onSelectionChanged(int selStart, int selEnd) {
         if (!TextUtils.isEmpty(hintStr) && selStart < hintStr.length()) {
-            setSelection(hintStr.length(), getText().toString().trim().length());
+            setSelection(hintStr.length(), getLength());
         }
     }
 
@@ -57,23 +64,40 @@ public class HoldHintEditText extends EditText implements View.OnKeyListener {
         boolean consumed = super.onTextContextMenuItem(id);
         switch (id) {
             case android.R.id.selectAll:
-                setSelection(hintStr.length(), getText().toString().trim().length());
+                isSelecteAll = true;
+                setSelection(hintStr.length(), getLength());
                 break;
             default:
+                isSelecteAll = false;
                 break;
 
         }
         return consumed;
     }
 
+    /**
+     * 保证hintStr不被删除的意向就是 选择焦点（包括 gSelectionStart和 SelectionEnd）处于与hintStr的长度相等的位置
+     * 但是要排除全选的情况
+     *
+     * @param v
+     * @param keyCode
+     * @param event
+     * @return
+     */
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (getSelectionStart() < hintStr
-                    .length()) {
+            if (getSelectionStart() == hintStr
+                    .length() && getSelectionEnd() == getSelectionStart()
+                    && !isSelecteAll) {
                 return true;
             }
+            return false;
         }
         return false;
+    }
+
+    private int getLength() {
+        return getText().toString().trim().length();
     }
 }
